@@ -10,8 +10,8 @@ class RxDemo2 {
     var str = " 吃放吃饭"
     var str2 = " 吃放吃饭3"
     var str3 = " 睡觉 "
+    var str4 = " 不睡觉"
     var str33 = " 吃放吃饭"
-    var str4 = " 吃放吃饭3"
     var str3333 = " 睡觉 "
     fun rxFun(){
         Observable.create(object : ObservableOnSubscribe<String> {
