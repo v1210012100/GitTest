@@ -7,6 +7,8 @@ import io.reactivex.ObservableOnSubscribe
 
 class RxDemo2 {
     var num = 666
+    var str = " 吃放吃饭"
+    var str2 = " 吃放吃饭3"
     fun rxFun(){
         Observable.create(object : ObservableOnSubscribe<String> {
             override fun subscribe(emitter: ObservableEmitter<String>) {
