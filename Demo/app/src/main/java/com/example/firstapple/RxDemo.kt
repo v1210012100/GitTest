@@ -13,6 +13,7 @@ class RxDemo2 {
     var str4 = " 不睡觉"
     var str33 = " 吃放吃饭"
     var str3333 = " 睡觉 "
+    var str035 = " ZHENYAO睡觉 LE"
     fun rxFun(){
         Observable.create(object : ObservableOnSubscribe<String> {
             override fun subscribe(emitter: ObservableEmitter<String>) {
