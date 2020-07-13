@@ -6,7 +6,7 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
 
 class RxDemo2 {
-    var num = 5
+    var num = 666
     fun rxFun(){
         Observable.create(object : ObservableOnSubscribe<String> {
             override fun subscribe(emitter: ObservableEmitter<String>) {
