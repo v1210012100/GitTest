@@ -31,5 +31,8 @@ class RxDemo2 {
         }).subscribe({resp->
             Log.e("RxLog"," onNext "+resp)
         })
+        var str035 = " 22222---ZHENYAO睡觉 LE"
+        var str036 = " 5555 新的东西 "
+        var str037 = " ------------- 你也在本地做了一些修改 "
     }
 }
