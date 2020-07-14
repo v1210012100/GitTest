@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.e("mytest","  onCreate " )
+        Log.e("mytest","  xia luo commit on MainActivity " )
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
