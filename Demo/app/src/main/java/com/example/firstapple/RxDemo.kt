@@ -18,7 +18,9 @@ class RxDemo2 {
     var str037 = " ------------- 你也在本地做了一些修改 "
     fun rxFun(){
         var str= " develope first commite "
-        var str3= " master 修改  "
+        var str3= " d 修改  "
+        var str31= " d 修改 "
+        var str32= " d 修改  "
         Observable.create(object : ObservableOnSubscribe<String> {
             override fun subscribe(emitter: ObservableEmitter<String>) {
                 Thread({
