@@ -17,6 +17,7 @@ class RxDemo2 {
     var str036 = "  新的东西 "
     var str037 = " ------------- 你也在本地做了一些修改 "
     fun rxFun(){
+        var str= " develope first commite "
         Observable.create(object : ObservableOnSubscribe<String> {
             override fun subscribe(emitter: ObservableEmitter<String>) {
                 Thread({
