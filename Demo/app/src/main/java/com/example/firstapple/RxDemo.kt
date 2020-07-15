@@ -7,6 +7,7 @@ import io.reactivex.ObservableOnSubscribe
 
 class RxDemo2 {
     var num = 666
+    var str111 = " master  commite "
     var str = " 吃放吃饭"
     var str2 = " 吃放吃饭3"
     var str3 = " 睡觉 "
