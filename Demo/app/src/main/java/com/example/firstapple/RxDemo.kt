@@ -8,6 +8,7 @@ import io.reactivex.ObservableOnSubscribe
 class RxDemo2 {
     var num = 5
     fun rxFun(){
+        var str= " develope first commite "
         Observable.create(object : ObservableOnSubscribe<String> {
             override fun subscribe(emitter: ObservableEmitter<String>) {
                 Thread({
