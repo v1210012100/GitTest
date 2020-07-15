@@ -34,5 +34,7 @@ class RxDemo2 {
         var str035 = " 22222---ZHENYAO睡觉 LE"
         var str036 = " 5555 新的东西 "
         var str037 = " ------------- 你也在本地做了一些修改 "
+
+        var str100 = "  P1  我是base 分支  "
     }
 }
