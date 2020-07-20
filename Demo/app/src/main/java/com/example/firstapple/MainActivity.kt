@@ -25,6 +25,7 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DefaultObserver
 import io.reactivex.schedulers.Schedulers
 import java.lang.Exception
@@ -52,41 +53,56 @@ class MainActivity : AppCompatActivity() {
         Thread.sleep(2000)
         Log.e("mytest", " 网络拉取数据成功 " )
         " 从网络中加载数据"
-    }.subscribeOn(Schedulers.io())
+    }.subscribeOn(Schedulers.computation())
 
-    val cacheObservable2 = Observable.create(object : ObservableOnSubscribe<String> {
-        override fun subscribe(it: ObservableEmitter<String>) {
-            Thread.sleep(500)
-            it.onNext(" 从缓存中加载数据")
-            it.onComplete()
-        }
-    }).subscribeOn(Schedulers.io())
 
-    val netObservable2 = Observable.create(object : ObservableOnSubscribe<String> {
-        override fun subscribe(it: ObservableEmitter<String>) {
-            1/0
-            Thread.sleep(2000)
-            it.onNext(" 从网络中加载数据")
-            it.onComplete()
-        }
-    }).subscribeOn(Schedulers.io())
 
+
+
+    fun getCacheOb():Observable<String>{
+        return Observable.create(object : ObservableOnSubscribe<String> {
+            override fun subscribe(it: ObservableEmitter<String>) {
+//            Thread.sleep(500)
+                it.onNext(" 从缓存中加载数据")
+                it.onComplete()
+            }
+        }).subscribeOn(Schedulers.io())
+    }
+
+    fun getNetOb():Observable<String>{
+        return Observable.create(object : ObservableOnSubscribe<String> {
+            override fun subscribe(it: ObservableEmitter<String>) {
+                throw(Error())
+//            Thread.sleep(2000)
+//            it.onNext(" 从网络中加载数据")
+//            it.onComplete()
+            }
+        }).subscribeOn(Schedulers.io())
+    }
 
     @SuppressLint("CheckResult")
     fun concatTest() {
-
+        Schedulers.io().createWorker()
         // Note that onError notifications will cut ahead of onNext notifications on the emission
         val list = listOf(cacheObservable,netObservable)
-        val list2 = listOf(cacheObservable2,netObservable2)
-//        Observable.concat(list2).observeOn(AndroidSchedulers.mainThread())
-        Observable.concatEager(list2).observeOn(AndroidSchedulers.mainThread())
+        Observable.concat(getCacheOb(),getNetOb()).observeOn(AndroidSchedulers.mainThread())
+//        Observable.concatEager(list2).observeOn(AndroidSchedulers.mainThread())
 //        Observable.concatEager(list2).observeOn(Schedulers.io())
-            .subscribe({
-                Log.e("mytest", " 下游 获取结果 " + it)
-            }, {
-                Log.e("mytest", " 下游 erro " + it)
-            },{
-                Log.e("mytest", " onCompelete " )
+            .subscribe(object :Observer<String>{
+                override fun onComplete() {
+                }
+
+                override fun onSubscribe(d: Disposable) {
+                }
+
+                override fun onNext(t: String) {
+                    Log.e("mytest","  onNext  "+t)
+                }
+
+                override fun onError(e: Throwable) {
+                    Log.e("mytest","  onError  "+e)
+                }
+
             })
     }
 
