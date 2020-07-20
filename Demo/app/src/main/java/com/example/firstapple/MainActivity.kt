@@ -1,5 +1,7 @@
 package com.example.firstapple
 
+import android.accounts.NetworkErrorException
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -22,92 +24,70 @@ import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
 import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DefaultObserver
+import io.reactivex.schedulers.Schedulers
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.e("mytest","  onCreate " )
-        Log.e("mytest","  xia luo commit on MainActivity " )
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
-            Handler().post(Runnable {  })
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            concatTest()
         }
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-//        lifecycle.addObserver(object:LifecycleEventObserver{
-//            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-//                Log.e("mytest"," event   " +event)
-//            }
-//        })
-        rxFun()
 
     }
 
-    override fun onStart() {
-//        Log.e("mytest","on onStart")
-        super.onStart()
-    }
-    override fun onResume() {
-//        Log.e("mytest","on Resume")
-        super.onResume()
+    val cacheObservable = Observable.fromCallable {
+        Thread.sleep(500)
+        Log.e("mytest", " 缓存加载数据成功 " )
+        " 从缓存中加载数据"
+    }.subscribeOn(Schedulers.io())
+
+    val netObservable = Observable.fromCallable {
+        throw (NetworkErrorException())
+        Thread.sleep(2000)
+        Log.e("mytest", " 网络拉取数据成功 " )
+        " 从网络中加载数据"
+    }.subscribeOn(Schedulers.io())
+
+    val cacheObservable2 = Observable.create(object : ObservableOnSubscribe<String> {
+        override fun subscribe(it: ObservableEmitter<String>) {
+            Thread.sleep(500)
+            it.onNext(" 从缓存中加载数据")
+            it.onComplete()
+        }
+    }).subscribeOn(Schedulers.io())
+
+    val netObservable2 = Observable.create(object : ObservableOnSubscribe<String> {
+        override fun subscribe(it: ObservableEmitter<String>) {
+            1/0
+            Thread.sleep(2000)
+            it.onNext(" 从网络中加载数据")
+            it.onComplete()
+        }
+    }).subscribeOn(Schedulers.io())
+
+
+    @SuppressLint("CheckResult")
+    fun concatTest() {
+
+        // Note that onError notifications will cut ahead of onNext notifications on the emission
+        val list = listOf(cacheObservable,netObservable)
+        val list2 = listOf(cacheObservable2,netObservable2)
+//        Observable.concat(list2).observeOn(AndroidSchedulers.mainThread())
+        Observable.concatEager(list2).observeOn(AndroidSchedulers.mainThread())
+//        Observable.concatEager(list2).observeOn(Schedulers.io())
+            .subscribe({
+                Log.e("mytest", " 下游 获取结果 " + it)
+            }, {
+                Log.e("mytest", " 下游 erro " + it)
+            },{
+                Log.e("mytest", " onCompelete " )
+            })
     }
 
-    override fun onStop() {
-//        Log.e("mytest","on onStop")
-        super.onStop()
-    }
-
-    override fun onPause() {
-//        Log.e("mytest","on onPause")
-        super.onPause()
-    }
-
-    override fun onDestroy() {
-//        Log.e("mytest","on onDestroy")
-        super.onDestroy()
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
-
-    fun rxFun(){
-        Observable.create(object :ObservableOnSubscribe<String>{
-            override fun subscribe(emitter: ObservableEmitter<String>) {
-                Thread({
-                    emitter.onNext("第一次")
-                    emitter.onNext("第二次")
-                    emitter.onNext("第三次")
-                }).start()
-
-            }
-        }).subscribe({resp->
-            Log.e("RxLog"," onNext "+resp)
-        })
-    }
 }
