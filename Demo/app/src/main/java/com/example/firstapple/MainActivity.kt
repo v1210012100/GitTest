@@ -17,9 +17,7 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.*
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.ObservableOnSubscribe
@@ -31,19 +29,24 @@ import io.reactivex.schedulers.Schedulers
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
-
+    val live = MutableLiveData<Boolean>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
             concatTest()
+            Thread.sleep(100)
         }
+        live.value = true
+        live.observe(this, Observer {
+            Log.e("mytest","live data onChanged ")
+        })
 
     }
 
     val cacheObservable = Observable.fromCallable {
-        Thread.sleep(500)
+//        Thread.sleep(500)
         Log.e("mytest", " 缓存加载数据成功 " )
         " 从缓存中加载数据"
     }.subscribeOn(Schedulers.io())
@@ -63,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         return Observable.create(object : ObservableOnSubscribe<String> {
             override fun subscribe(it: ObservableEmitter<String>) {
 //            Thread.sleep(500)
+                Log.e("mytest","")
                 it.onNext(" 从缓存中加载数据")
                 it.onComplete()
             }
@@ -86,8 +90,6 @@ class MainActivity : AppCompatActivity() {
         // Note that onError notifications will cut ahead of onNext notifications on the emission
         val list = listOf(cacheObservable,netObservable)
         Observable.concat(getCacheOb(),getNetOb()).observeOn(AndroidSchedulers.mainThread())
-//        Observable.concatEager(list2).observeOn(AndroidSchedulers.mainThread())
-//        Observable.concatEager(list2).observeOn(Schedulers.io())
             .subscribe(object :Observer<String>{
                 override fun onComplete() {
                 }
@@ -104,6 +106,10 @@ class MainActivity : AppCompatActivity() {
                 }
 
             })
+    }
+
+    fun test(a:String?){
+        a?.substring(1..2)
     }
 
 }
